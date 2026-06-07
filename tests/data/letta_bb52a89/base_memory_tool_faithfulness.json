@@ -1,0 +1,39 @@
+{
+  "base_sleeptime_tools": [
+    "memory_replace",
+    "memory_insert",
+    "memory_rethink",
+    "memory_finish_edits"
+  ],
+  "core_memory_line_number_warning": "# NOTE: Line numbers shown below (with arrows like '1→') are to help during editing. Do NOT include line number prefixes in your memory edit tool calls.",
+  "validation_regexes": {
+    "memory_insert": [
+      "\\nLine \\d+: "
+    ],
+    "memory_replace": [
+      "\\nLine \\d+: ",
+      "\\nLine \\d+: "
+    ],
+    "memory_rethink": [
+      "\\nLine \\d+: "
+    ]
+  },
+  "value_error_sources": {
+    "memory_insert": [
+      "\"new_string contains a line number prefix, which is not allowed. Do not include line numbers when calling memory tools (line numbers are for display purposes only).\"",
+      "\"new_string contains a line number warning, which is not allowed. Do not include line number information when calling memory tools (line numbers are for display purposes only).\"",
+      "f\"Invalid `insert_line` parameter: {insert_line}. It should be within the range of lines of the memory block: {[0, n_lines]}, or -1 to append to the end of the memory block.\""
+    ],
+    "memory_replace": [
+      "\"old_string contains a line number prefix, which is not allowed. Do not include line numbers when calling memory tools (line numbers are for display purposes only).\"",
+      "\"old_string contains a line number warning, which is not allowed. Do not include line number information when calling memory tools (line numbers are for display purposes only).\"",
+      "\"new_string contains a line number prefix, which is not allowed. Do not include line numbers when calling memory tools (line numbers are for display purposes only).\"",
+      "f\"No replacement was performed, old_string `{old_string}` did not appear verbatim in memory block with label `{label}`.\"",
+      "f\"No replacement was performed. Multiple occurrences of old_string `{old_string}` in lines {lines}. Please ensure it is unique.\""
+    ],
+    "memory_rethink": [
+      "\"new_memory contains a line number prefix, which is not allowed. Do not include line numbers when calling memory tools (line numbers are for display purposes only).\"",
+      "\"new_memory contains a line number warning, which is not allowed. Do not include line number information when calling memory tools (line numbers are for display purposes only).\""
+    ]
+  }
+}

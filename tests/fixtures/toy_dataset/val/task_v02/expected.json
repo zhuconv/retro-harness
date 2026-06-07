@@ -1,0 +1,5 @@
+{
+  "rules": [
+    {"type": "must_contain", "value": "canonical deploy script is tools/deploy-prod-v3.sh"}
+  ]
+}

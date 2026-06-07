@@ -1,0 +1,7 @@
+# Minimal codex CLI config using the bundled ChatGPT auth (no custom
+# provider). Smallest workable reproducer for users with a ChatGPT Plus
+# subscription — `codex login` into the same codex home pointed at by
+# --codex-auth-home.
+
+model = "gpt-5.5"
+model_reasoning_effort = "high"

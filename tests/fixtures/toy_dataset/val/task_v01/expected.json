@@ -1,0 +1,5 @@
+{
+  "rules": [
+    {"type": "must_contain", "value": "team project code name is Phoenix"}
+  ]
+}

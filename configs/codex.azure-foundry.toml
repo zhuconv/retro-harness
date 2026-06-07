@@ -1,0 +1,27 @@
+# Codex CLI config for the Azure OpenAI (Foundry) gpt-5.x deployments.
+# Authenticates directly to the Azure resource using a Microsoft Entra ID
+# Bearer token. Codex re-runs the auth command every `refresh_interval_ms`
+# milliseconds; AAD tokens are valid ~60 min, so we refresh at 30.
+#
+# Prerequisite: `az login` (interactive) or a managed identity with the
+# Cognitive Services User role on the resource.
+
+model_provider = "azure-foundry"
+model = "gpt-5.5"
+model_reasoning_effort = "high"
+
+[model_providers.azure-foundry]
+name = "Azure OpenAI East US 2 (Foundry, Entra-auth)"
+base_url = "https://YOUR-RESOURCE.openai.azure.com/openai/v1"
+wire_api = "responses"
+
+[model_providers.azure-foundry.auth]
+command = "az"
+args = [
+  "account", "get-access-token",
+  "--resource", "https://cognitiveservices.azure.com",
+  "--query", "accessToken",
+  "-o", "tsv",
+]
+refresh_interval_ms = 1800000
+timeout_ms = 30000

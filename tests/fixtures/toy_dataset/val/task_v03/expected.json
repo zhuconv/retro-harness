@@ -1,0 +1,7 @@
+{
+  "rules": [
+    {"type": "must_contain", "value": "team project code name is Phoenix"},
+    {"type": "must_contain", "value": "primary oncall rotation is backend-alpha"},
+    {"type": "must_contain", "value": "canonical deploy script is tools/deploy-prod-v3.sh"}
+  ]
+}

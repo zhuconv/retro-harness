@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+*.egg-info/
+.venv/
+build/
+dist/
+
+# Tooling caches
+.cache/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.coverage
+coverage.xml
+htmlcov/
+
+# Node / web UI
+node_modules/
+
+# Secrets / environment
+.env
+.env.local
+
+# Agent & dev tooling
+.codex
+.claude/
+.agents/
+.worktrees/
+
+# Editors & OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Experiment outputs
+runs/
+logs/
+snapshots/
+!tests/strategies/snapshots/
+data/cache/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.listing
+docs/paper/*.log

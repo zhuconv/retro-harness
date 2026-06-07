@@ -1,0 +1,6 @@
+{
+  "rules": [
+    {"type": "must_contain", "value": "team project code name is Phoenix"},
+    {"type": "must_contain", "value": "primary oncall rotation is backend-alpha"}
+  ]
+}

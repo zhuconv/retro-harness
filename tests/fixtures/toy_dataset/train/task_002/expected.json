@@ -1,0 +1,5 @@
+{
+  "rules": [
+    {"type": "must_contain", "value": "primary oncall rotation is backend-alpha"}
+  ]
+}

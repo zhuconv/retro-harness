@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RHO — Retrospective Harness Optimization</title>
+<meta name="description" content="Retrospective Harness Optimization (RHO): improving LLM agents from unlabeled past trajectories — no ground-truth validation set required.">
+
+<!-- Open Graph / social -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Retrospective Harness Optimization (RHO)">
+<meta property="og:description" content="Improving LLM agents via self-preference over trajectory rollouts — no ground-truth labels. A single round lifts SWE-Bench Pro from 59% to 78%.">
+<meta property="og:image" content="https://paper-rho.wenbo.io/static/fig2-pipeline.png">
+<meta property="og:url" content="https://paper-rho.wenbo.io">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --accent: #2F4F6F;
+    --accent-soft: #D6E6F2;
+    --accent-2: #E0833B;
+    --ink: #1c2530;
+    --muted: #6F7480;
+    --line: #e6e9ee;
+    --bg: #ffffff;
+    --bg-alt: #f7f9fb;
+    --pos: #2f8f5b;
+    --neg: #b3463a;
+    --maxw: 920px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ---------- Header ---------- */
+  header { padding: 72px 0 36px; text-align: center; border-bottom: 1px solid var(--line); }
+  .eyebrow {
+    font-size: 0.82rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent-2); font-weight: 600; margin-bottom: 18px;
+  }
+  h1 {
+    font-family: 'Newsreader', serif;
+    font-weight: 600; font-size: clamp(2rem, 4.5vw, 3.1rem);
+    line-height: 1.12; margin: 0 0 14px; letter-spacing: -0.01em;
+  }
+  h1 .rho { color: var(--accent); }
+  .subtitle {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: clamp(1.05rem, 2.4vw, 1.4rem); color: var(--muted);
+    max-width: 720px; margin: 0 auto 30px;
+  }
+  .authors { font-size: 1.02rem; margin: 0 auto 6px; max-width: 760px; }
+  .authors a { color: var(--ink); }
+  .authors sup { color: var(--accent); font-weight: 600; }
+  .affil { color: var(--muted); font-size: 0.92rem; margin-bottom: 28px; }
+
+  .btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 999px;
+    background: var(--accent); color: #fff; font-weight: 600; font-size: 0.95rem;
+    border: 1px solid var(--accent); transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(47,79,111,.22); }
+  .btn.ghost { background: #fff; color: var(--accent); }
+  .btn svg { width: 17px; height: 17px; fill: currentColor; }
+
+  /* ---------- Sections ---------- */
+  section { padding: 52px 0; border-bottom: 1px solid var(--line); }
+  h2 {
+    font-family: 'Newsreader', serif; font-weight: 600;
+    font-size: 1.7rem; margin: 0 0 20px; letter-spacing: -0.01em;
+  }
+  p { margin: 0 0 16px; }
+  .lead { font-size: 1.06rem; }
+  .center { text-align: center; }
+  figure { margin: 0; }
+  figure img { width: 100%; height: auto; display: block; border-radius: 8px; }
+  figcaption { color: var(--muted); font-size: 0.9rem; margin-top: 14px; text-align: center; }
+  .hero { padding: 44px 0 12px; }
+  .hero figure img { border: 1px solid var(--line); padding: 14px; background: #fff; }
+
+  .tldr {
+    background: var(--accent-soft); border-radius: 12px; padding: 22px 26px;
+    margin: 30px 0 0; font-size: 1.05rem;
+  }
+  .tldr strong { color: var(--accent); }
+
+  /* steps */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 8px; }
+  .step { background: var(--bg-alt); border: 1px solid var(--line); border-radius: 12px; padding: 22px; }
+  .step .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff;
+    font-weight: 700; font-size: 0.95rem; margin-bottom: 12px;
+  }
+  .step h3 { margin: 0 0 8px; font-size: 1.05rem; }
+  .step p { margin: 0; font-size: 0.94rem; color: #41505f; }
+
+  /* table */
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.95rem; margin-top: 6px; }
+  th, td { padding: 11px 14px; text-align: center; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { font-weight: 600; color: var(--accent); border-bottom: 2px solid var(--accent); }
+  tr.ours { background: var(--accent-soft); font-weight: 600; }
+  tr.base td { color: var(--muted); }
+  .delta-pos { color: var(--pos); font-size: 0.86em; }
+  .delta-neg { color: var(--neg); font-size: 0.86em; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: center; }
+  .two-col .text p:last-child { margin-bottom: 0; }
+
+  /* bibtex */
+  pre {
+    background: #1c2530; color: #e8edf2; border-radius: 12px; padding: 22px;
+    overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; line-height: 1.6;
+  }
+  .copy-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .copy-btn {
+    cursor: pointer; border: 1px solid var(--line); background: #fff; color: var(--accent);
+    border-radius: 8px; padding: 6px 14px; font-size: 0.85rem; font-weight: 600; font-family: inherit;
+  }
+  .copy-btn:hover { background: var(--bg-alt); }
+
+  footer { padding: 40px 0 60px; text-align: center; color: var(--muted); font-size: 0.9rem; }
+
+  @media (max-width: 720px) {
+    .steps { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">arXiv 2026 · Preprint</div>
+    <h1><span class="rho">Retrospective Harness Optimization</span></h1>
+    <p class="subtitle">Improving LLM Agents via Self-Preference over Trajectory Rollouts</p>
+
+    <p class="authors">
+      Wenbo Pan<sup>1</sup>, Shujie Liu<sup>2</sup>, Chin-Yew Lin<sup>2</sup>, Jingying Zeng<sup>2</sup>,
+      Xianfeng Tang<sup>2</sup>, Xiangyang Zhou<sup>2</sup>, Yan Lu<sup>2</sup>, Xiaohua Jia<sup>1</sup>
+    </p>
+    <p class="affil"><sup>1</sup>City University of Hong Kong &nbsp;·&nbsp; <sup>2</sup>Microsoft Research Asia</p>
+
+    <div class="btns">
+      <a class="btn" href="https://arxiv.org/abs/2606.05922">
+        <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm8 1.5V8h4.5L14 3.5zM8 12h8v1.5H8V12zm0 4h8v1.5H8V16z"/></svg>
+        Paper
+      </a>
+      <a class="btn ghost" href="https://github.com/wbopan/retro-harness">
+        <svg viewBox="0 0 24 24"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0C18 4.6 19 4.9 19 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+        Code
+      </a>
+      <a class="btn ghost" href="#bibtex">
+        <svg viewBox="0 0 24 24"><path d="M7 4h10a1 1 0 0 1 1 1v15l-6-3-6 3V5a1 1 0 0 1 1-1z"/></svg>
+        BibTeX
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <figure>
+    <img src="static/fig2-pipeline.png" alt="The RHO pipeline: coreset selection, group rollout, harness proposal">
+    <figcaption>The <strong>RHO</strong> pipeline. A diverse coreset of past tasks is re-solved in parallel; within- and cross-trajectory signals drive candidate harness edits; the agent's own pairwise self-preference selects the winner. No ground-truth labels are used.</figcaption>
+  </figure>
+</div>
+
+<section id="abstract">
+  <div class="wrap">
+    <h2>Abstract</h2>
+    <p class="lead">AI agents rely on a <em>harness</em> of skills, tools, and workflows to solve complex problems, and continually improving this harness is essential for adapting to new tasks. Existing optimization methods typically require ground-truth validation sets, yet such labeled data is difficult to acquire in practical deployment settings.</p>
+    <p>We introduce <strong>Retrospective Harness Optimization (RHO)</strong>, a self-supervised method that optimizes the agent harness using only past trajectories. RHO selects a diverse coreset of challenging tasks from past trajectories and re-solves them in parallel. The agent analyzes these rollouts using self-validation and self-consistency, then generates candidate harness updates and selects the most effective one by its own pairwise self-preference.</p>
+    <p>We evaluate RHO across three diverse domains spanning software engineering, technical work, and knowledge work. Notably, a single optimization round improves the pass rate on SWE-Bench Pro from 59% to 78% without any external grading. Our analysis shows that RHO effectively targets prior failure modes: the optimized harness alters the agent's behavior patterns and sustains higher accuracy during long-horizon sessions.</p>
+
+    <div class="tldr">
+      <strong>TL;DR</strong> &nbsp;— RHO improves an agent's harness purely from its own <strong>unlabeled past trajectories</strong>, with no validation set and no external grading. One retrospective pass: <strong>SWE-Bench Pro 59% → 78%</strong>.
+    </div>
+  </div>
+</section>
+
+<section id="method">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p>Most harness optimizers iterate against a <em>labeled validation set</em> — but real deployments rarely have one. A deployed agent does, however, produce a continuous stream of <strong>unlabeled trajectories</strong>. RHO turns those into harness improvements in three label-free stages:</p>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h3>Coreset Selection</h3>
+        <p>A determinantal point process (DPP) picks a small, difficulty-diverse subset of past tasks to re-solve.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3>Group Rollout</h3>
+        <p>Each coreset task is re-solved <em>G</em> times in parallel, yielding two diagnostic signals: self-validation within a trajectory and self-consistency across trajectories.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3>Harness Proposal</h3>
+        <p>The agent samples <em>N</em> candidate harness edits and keeps the one its own <em>pairwise self-preference</em> ranks highest over the baseline.</p>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top:40px;">
+      <figure>
+        <img src="static/fig1-rho-comparison.png" alt="Validation-based vs retrospective optimization">
+      </figure>
+      <div class="text">
+        <h3 style="font-family:'Newsreader',serif;font-weight:600;margin:0 0 10px;">No validation set, no feedback loop</h3>
+        <p>Validation-feedback methods repeatedly score harness edits against labeled data. RHO instead reflects on past trajectories in a single retrospective pass — replacing the external grader with the agent's own self-validation, self-consistency, and self-preference.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="results">
+  <div class="wrap">
+    <h2>Results</h2>
+    <p>Held-out pass rate after a single optimization round (Codex + GPT-5.5), against feedback-free baselines under a matched agent-call budget:</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Method</th><th>Harness surface</th><th>SWE-Bench Pro</th><th>Terminal-Bench 2</th><th>GAIA-2</th></tr>
+        </thead>
+        <tbody>
+          <tr class="base"><td>Vanilla Codex</td><td>—</td><td>0.59</td><td>0.71</td><td>0.29</td></tr>
+          <tr class="base"><td>Dynamic Cheatsheet</td><td>Skills</td><td>0.62 <span class="delta-pos">+0.03</span></td><td>0.73 <span class="delta-pos">+0.02</span></td><td>0.30 <span class="delta-pos">+0.01</span></td></tr>
+          <tr class="base"><td>ReasoningBank</td><td>Memory</td><td>0.61 <span class="delta-pos">+0.02</span></td><td>0.73 <span class="delta-pos">+0.02</span></td><td>0.28 <span class="delta-neg">−0.01</span></td></tr>
+          <tr class="base"><td>Sleep-time Compute</td><td>Memory</td><td>0.64 <span class="delta-pos">+0.05</span></td><td>0.73 <span class="delta-pos">+0.02</span></td><td>0.32 <span class="delta-pos">+0.03</span></td></tr>
+          <tr class="ours"><td>RHO (ours)</td><td>Skills + Tools</td><td>0.78 <span class="delta-pos">+0.19</span></td><td>0.76 <span class="delta-pos">+0.05</span></td><td>0.37 <span class="delta-pos">+0.08</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="color:var(--muted);font-size:0.92rem;margin-top:14px;">RHO also beats <strong>Meta-Harness</strong>, a validation-feedback optimizer, at a matched single-round budget (0.78 vs 0.62 on SWE-Bench Pro) — without ever touching ground-truth labels.</p>
+
+    <figure style="margin-top:40px;">
+      <img src="static/fig-harness-artifacts.png" alt="What the optimized harness contains" style="border:1px solid var(--line);padding:14px;border-radius:8px;">
+      <figcaption>What RHO writes into the harness: task-agnostic instructions, skills that record environment idiosyncrasies behind past failures, and executable tools — each targeting a failure mode observed in the original trajectories.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="bibtex">
+  <div class="wrap">
+    <h2>Citation</h2>
+    <div class="copy-row">
+      <span style="color:var(--muted);font-size:0.9rem;">If you find RHO useful, please cite:</span>
+      <button class="copy-btn" onclick="copyBib()">Copy</button>
+    </div>
+<pre id="bib">@article{pan2026rho,
+  title   = {Retrospective Harness Optimization: Improving LLM Agents
+             via Self-Preference over Trajectory Rollouts},
+  author  = {Pan, Wenbo and Liu, Shujie and Lin, Chin-Yew and Zeng, Jingying
+             and Tang, Xianfeng and Zhou, Xiangyang and Lu, Yan and Jia, Xiaohua},
+  journal = {arXiv preprint arXiv:2606.05922},
+  year    = {2026}
+}</pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><a href="https://arxiv.org/abs/2606.05922">Paper</a> · <a href="https://github.com/wbopan/retro-harness">Code</a> · City University of Hong Kong &amp; Microsoft Research Asia</p>
+  </div>
+</footer>
+
+<script>
+  function copyBib() {
+    const t = document.getElementById('bib').innerText;
+    navigator.clipboard.writeText(t).then(() => {
+      const b = document.querySelector('.copy-btn');
+      const o = b.innerText; b.innerText = 'Copied!';
+      setTimeout(() => b.innerText = o, 1600);
+    });
+  }
+</script>
+</body>
+</html>

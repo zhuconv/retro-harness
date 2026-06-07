@@ -1,0 +1,63 @@
+{
+  "format_version": "1",
+  "dataset_type": "locomo-hard",
+  "source_dataset": "locomo:../locomo10.json",
+  "source_run": "runs/locomo-hard-100x2",
+  "selection": {
+    "sample_size_per_split": 100,
+    "hard_count_per_split": 20,
+    "sample_seed": 0,
+    "harness_id": "h_c8c03d6d0938",
+    "train_mean_score": 0.5309998470353282,
+    "train_cutoff_score": 0.2285714285714286,
+    "val_mean_score": 0.5495531307570569,
+    "val_cutoff_score": 0.22222222222222224
+  },
+  "splits": {
+    "train": [
+      "conv-42/qa_0060",
+      "conv-30/qa_0048",
+      "conv-42/qa_0119",
+      "conv-43/qa_0091",
+      "conv-42/qa_0069",
+      "conv-44/qa_0016",
+      "conv-48/qa_0088",
+      "conv-41/qa_0081",
+      "conv-43/qa_0024",
+      "conv-49/qa_0120",
+      "conv-30/qa_0075",
+      "conv-49/qa_0143",
+      "conv-41/qa_0145",
+      "conv-47/qa_0025",
+      "conv-50/qa_0058",
+      "conv-47/qa_0064",
+      "conv-49/qa_0038",
+      "conv-26/qa_0046",
+      "conv-26/qa_0049",
+      "conv-48/qa_0111"
+    ],
+    "val": [
+      "conv-44/qa_0106",
+      "conv-42/qa_0080",
+      "conv-43/qa_0151",
+      "conv-43/qa_0067",
+      "conv-43/qa_0015",
+      "conv-43/qa_0005",
+      "conv-42/qa_0058",
+      "conv-44/qa_0052",
+      "conv-44/qa_0033",
+      "conv-47/qa_0058",
+      "conv-42/qa_0135",
+      "conv-50/qa_0119",
+      "conv-43/qa_0136",
+      "conv-26/qa_0007",
+      "conv-47/qa_0136",
+      "conv-26/qa_0024",
+      "conv-44/qa_0003",
+      "conv-49/qa_0061",
+      "conv-44/qa_0062",
+      "conv-26/qa_0149"
+    ],
+    "test": []
+  }
+}
