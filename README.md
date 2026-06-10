@@ -1,6 +1,6 @@
-# RHO — Retrospective Harness Optimization
+# Evolving Agents in the Dark
 
-**Improving LLM Agents via Self-Preference over Trajectory Rollouts**
+**Retrospective Harness Optimization (RHO) via Self-Preference**
 
 <p align="center">
   <a href="https://arxiv.org/abs/2606.05922"><img src="https://img.shields.io/badge/arXiv-2606.05922-b31b1b.svg" alt="arXiv"></a>
@@ -118,7 +118,7 @@ agents) can be swapped for ablations.
 
 ```bibtex
 @article{pan2026rho,
-  title   = {Retrospective Harness Optimization: Improving LLM Agents via Self-Preference over Trajectory Rollouts},
+  title   = {Evolving Agents in the Dark: Retrospective Harness Optimization via Self-Preference},
   author  = {Pan, Wenbo and Liu, Shujie and Lin, Chin-Yew and Zeng, Jingying and Tang, Xianfeng and Zhou, Xiangyang and Lu, Yan and Jia, Xiaohua},
   journal = {arXiv preprint arXiv:2606.05922},
   year    = {2026}

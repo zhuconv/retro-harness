@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
-title: "Retrospective Harness Optimization: Improving LLM Agents via Self-Preference over Trajectory Rollouts"
+title: "Evolving Agents in the Dark: Retrospective Harness Optimization via Self-Preference"
 authors:
   - family-names: Pan
     given-names: Wenbo
@@ -28,7 +28,7 @@ url: "https://paper-rho.wenbo.io"
 license: MIT
 preferred-citation:
   type: article
-  title: "Retrospective Harness Optimization: Improving LLM Agents via Self-Preference over Trajectory Rollouts"
+  title: "Evolving Agents in the Dark: Retrospective Harness Optimization via Self-Preference"
   authors:
     - family-names: Pan
       given-names: Wenbo
