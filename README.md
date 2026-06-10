@@ -109,10 +109,60 @@ configs/               # Codex CLI backend configs
 scripts/               # figure-building & analysis scripts
 webui/                 # run-browser frontend
 tests/                 # hermetic + real-agent end-to-end tests
+.claude/workflows/
+└── retrospection.js   # RHO as a Claude Code dynamic workflow (see below)
 ```
 
 Implementations are decoupled behind `typing.Protocol` so components (selectors, strategies, datasets,
 agents) can be swapped for ablations.
+
+## Retrospection: try RHO on your own Claude Code projects
+
+[`.claude/workflows/retrospection.js`](.claude/workflows/retrospection.js) packages the paper's method
+as a single [Claude Code dynamic workflow](https://code.claude.com/docs/en/workflows) that evolves the
+harness Claude Code natively exposes — your project's `CLAUDE.md`, its auto-memory directory, and
+helper scripts — using only the session transcripts you have already accumulated. No labels, no
+validation set, no benchmark: the trajectories are your own past sessions.
+
+One run is one retrospection cycle (≈40 agents, well under the 1,000-agent cap):
+
+1. **Bootstrap** — locate the project's transcripts (`~/.claude/projects/<slug>/*.jsonl`, including
+   worktree sessions) and snapshot the current harness *h₀*.
+2. **Digest** — parallel agents summarize past sessions into difficulty scores + task fingerprints
+   (the paper's LLM judge).
+3. **Coreset** — plain-JS greedy MAP on the paper's DPP kernel `L = diag(r)·S·diag(r)` (Jaccard
+   fingerprint kernel, same `θ` trade-off). Similar sessions are grouped so the diagnoser can recover
+   **self-consistency** across them; singletons fall back to validation-only diagnosis.
+4. **Diagnose** — **self-validation** + cross-session **self-consistency**, producing severity-weighted,
+   task-agnostic improvement directions.
+5. **Optimize** — *N* independent candidate harnesses, staged outside the working tree.
+6. **Probe & select** — replayable past tasks are re-attempted under each candidate in isolated
+   worktrees; **pairwise self-preference** scores the fresh trajectory against the original session.
+   The winner is applied only if its mean score is positive, with a full backup first.
+
+Usage — copy the file into a project's `.claude/workflows/` (or `~/.claude/workflows/` for all
+projects), then in Claude Code:
+
+```
+/retrospection
+```
+
+or target another project / override knobs via args:
+
+```js
+{ projectDir: "/path/to/project",  // default: current project
+  model: "opus",                   // default: session model
+  k: 8,                            // coreset size (paper: 10)
+  n: 2,                            // candidate harnesses (paper: 3)
+  probes: 4,                       // self-preference probe tasks
+  maxSessions: 36, theta: 0.7,     // DPP difficulty/diversity trade-off
+  apply: true }                    // false = stage the winner, don't touch live files
+```
+
+Every cycle persists its artifacts (digests, diagnoses, candidates, probe trajectories, scores,
+`report.md`, and a `backup/` of the pre-apply harness) under `~/.claude/rho-runs/<timestamp>-<project>/`.
+Re-running the command later is the next evolution round — the harness keeps learning from whatever
+real sessions you accumulate in between.
 
 ## Citation
 
