@@ -30,6 +30,10 @@
     --bg-alt: #f7f9fb;
     --pos: #2f8f5b;
     --neg: #b3463a;
+    --dark-bg-1: #131D28;
+    --dark-bg-2: #1F3247;
+    --dark-text: #E7EDF3;
+    --dark-muted: #9DAFC1;
     --maxw: 920px;
   }
   * { box-sizing: border-box; }
@@ -47,7 +51,11 @@
   a:hover { text-decoration: underline; }
 
   /* ---------- Header ---------- */
-  header { padding: 72px 0 36px; text-align: center; border-bottom: 1px solid var(--line); }
+  header {
+    padding: 76px 0 48px; text-align: center;
+    background: linear-gradient(180deg, var(--dark-bg-1) 0%, var(--dark-bg-2) 100%);
+    color: var(--dark-text);
+  }
   .eyebrow {
     font-size: 0.82rem; letter-spacing: 0.16em; text-transform: uppercase;
     color: var(--accent-2); font-weight: 600; margin-bottom: 18px;
@@ -56,27 +64,29 @@
     font-family: 'Newsreader', serif;
     font-weight: 600; font-size: clamp(2rem, 4.5vw, 3.1rem);
     line-height: 1.12; margin: 0 0 14px; letter-spacing: -0.01em;
+    color: #fff;
   }
-  h1 .rho { color: var(--accent); }
+  h1 .rho { color: var(--accent-soft); }
   .subtitle {
-    font-family: 'Newsreader', serif; font-style: italic;
-    font-size: clamp(1.05rem, 2.4vw, 1.4rem); color: var(--muted);
+    font-family: 'Newsreader', serif;
+    font-size: clamp(1.05rem, 2.4vw, 1.4rem); color: var(--dark-muted);
     max-width: 720px; margin: 0 auto 30px;
   }
-  .authors { font-size: 1.02rem; margin: 0 auto 6px; max-width: 760px; }
-  .authors a { color: var(--ink); }
-  .authors sup { color: var(--accent); font-weight: 600; }
-  .affil { color: var(--muted); font-size: 0.92rem; margin-bottom: 28px; }
+  .subtitle .sc { font-variant: small-caps; letter-spacing: 0.02em; color: var(--dark-text); }
+  .authors { font-size: 1.02rem; margin: 0 auto 6px; max-width: 760px; color: var(--dark-text); }
+  .authors a { color: var(--dark-text); }
+  .authors sup { color: var(--accent-soft); font-weight: 600; }
+  .affil { color: var(--dark-muted); font-size: 0.92rem; margin-bottom: 28px; }
 
   .btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
   .btn {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 10px 20px; border-radius: 999px;
-    background: var(--accent); color: #fff; font-weight: 600; font-size: 0.95rem;
-    border: 1px solid var(--accent); transition: transform .12s ease, box-shadow .12s ease;
+    padding: 10px 20px; border-radius: 0;
+    background: #fff; color: var(--ink); font-weight: 600; font-size: 0.95rem;
+    border: 1px solid #fff; transition: transform .12s ease, box-shadow .12s ease;
   }
-  .btn:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(47,79,111,.22); }
-  .btn.ghost { background: #fff; color: var(--accent); }
+  .btn:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+  .btn.ghost { background: transparent; color: var(--dark-text); border-color: rgba(231,237,243,.45); }
   .btn svg { width: 17px; height: 17px; fill: currentColor; }
 
   /* ---------- Sections ---------- */
@@ -89,23 +99,24 @@
   .lead { font-size: 1.06rem; }
   .center { text-align: center; }
   figure { margin: 0; }
-  figure img { width: 100%; height: auto; display: block; border-radius: 8px; }
+  figure img { width: 100%; height: auto; display: block; border-radius: 0; }
   figcaption { color: var(--muted); font-size: 0.9rem; margin-top: 14px; text-align: center; }
   .hero { padding: 44px 0 12px; }
   .hero figure img { border: 1px solid var(--line); padding: 14px; background: #fff; }
 
   .tldr {
-    background: var(--accent-soft); border-radius: 12px; padding: 22px 26px;
+    background: var(--accent-soft); border-radius: 0; padding: 22px 26px;
+    border-left: 4px solid var(--accent);
     margin: 30px 0 0; font-size: 1.05rem;
   }
   .tldr strong { color: var(--accent); }
 
   /* steps */
   .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 8px; }
-  .step { background: var(--bg-alt); border: 1px solid var(--line); border-radius: 12px; padding: 22px; }
+  .step { background: var(--bg-alt); border: 1px solid var(--line); border-radius: 0; padding: 22px; }
   .step .num {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff;
+    width: 30px; height: 30px; border-radius: 0; background: var(--accent); color: #fff;
     font-weight: 700; font-size: 0.95rem; margin-bottom: 12px;
   }
   .step h3 { margin: 0 0 8px; font-size: 1.05rem; }
@@ -127,13 +138,13 @@
 
   /* bibtex */
   pre {
-    background: #1c2530; color: #e8edf2; border-radius: 12px; padding: 22px;
+    background: #1c2530; color: #e8edf2; border-radius: 0; padding: 22px;
     overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; line-height: 1.6;
   }
   .copy-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .copy-btn {
     cursor: pointer; border: 1px solid var(--line); background: #fff; color: var(--accent);
-    border-radius: 8px; padding: 6px 14px; font-size: 0.85rem; font-weight: 600; font-family: inherit;
+    border-radius: 0; padding: 6px 14px; font-size: 0.85rem; font-weight: 600; font-family: inherit;
   }
   .copy-btn:hover { background: var(--bg-alt); }
 
@@ -150,8 +161,8 @@
 <header>
   <div class="wrap">
     <div class="eyebrow">arXiv 2026 · Preprint</div>
-    <h1><span class="rho">Evolving Agents in the Dark</span></h1>
-    <p class="subtitle">Retrospective Harness Optimization (RHO) via Self-Preference</p>
+    <h1>Evolving Agents in the Dark</h1>
+    <p class="subtitle"><span class="sc">Retrospective Harness Optimization</span> via Self-Preference</p>
 
     <p class="authors">
       Wenbo Pan<sup>1</sup>, Shujie Liu<sup>2</sup>, Chin-Yew Lin<sup>2</sup>, Jingying Zeng<sup>2</sup>,
@@ -251,7 +262,7 @@
     <p style="color:var(--muted);font-size:0.92rem;margin-top:14px;">RHO also beats <strong>Meta-Harness</strong>, a validation-feedback optimizer, at a matched single-round budget (0.78 vs 0.62 on SWE-Bench Pro) — without ever touching ground-truth labels.</p>
 
     <figure style="margin-top:40px;">
-      <img src="static/fig-harness-artifacts.png" alt="What the optimized harness contains" style="border:1px solid var(--line);padding:14px;border-radius:8px;">
+      <img src="static/fig-harness-artifacts.png" alt="What the optimized harness contains" style="border:1px solid var(--line);padding:14px;">
       <figcaption>What RHO writes into the harness: task-agnostic instructions, skills that record environment idiosyncrasies behind past failures, and executable tools — each targeting a failure mode observed in the original trajectories.</figcaption>
     </figure>
   </div>
