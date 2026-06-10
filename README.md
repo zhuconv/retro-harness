@@ -3,10 +3,10 @@
 **Retrospective Harness Optimization (RHO) via Self-Preference**
 
 <p align="center">
-  <a href="https://arxiv.org/abs/2606.05922"><img src="https://img.shields.io/badge/arXiv-2606.05922-b31b1b.svg?style=flat-square" alt="arXiv"></a>
-  <a href="https://paper-rho.wenbo.io"><img src="https://img.shields.io/badge/Project-Page-2F4F6F.svg?style=flat-square" alt="Project page"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License: MIT"></a>
-  <img src="https://img.shields.io/badge/python-3.11%2B-blue.svg?style=flat-square" alt="Python 3.11+">
+  <a href="https://arxiv.org/abs/2606.05922"><img src="https://img.shields.io/badge/arXiv-2606.05922-b31b1b.svg?style=for-the-badge" alt="arXiv"></a>
+  <a href="https://paper-rho.wenbo.io"><img src="https://img.shields.io/badge/Project-Page-2F4F6F.svg?style=for-the-badge" alt="Project page"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License: MIT"></a>
+  <img src="https://img.shields.io/badge/python-3.11%2B-blue.svg?style=for-the-badge" alt="Python 3.11+">
 </p>
 
 <p align="center">
