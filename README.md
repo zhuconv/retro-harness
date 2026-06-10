@@ -20,6 +20,20 @@
 
 ---
 
+## ⚡ Run it on your own projects
+
+| Agent | One line to try | |
+| :-- | :-- | :-- |
+| <img src="https://cdn.simpleicons.org/claude" width="18" alt="Claude"> &nbsp;**Claude Code** | Paste as a prompt:<br>`Run the workflow at https://raw.githubusercontent.com/wbopan/retro-harness/main/.claude/workflows/retrospection.js on this project` | **Dynamic workflow, plug-and-play on the project you're in. Recommended.** |
+| <img src="https://avatars.githubusercontent.com/u/14957082?s=36" width="18" alt="OpenAI"> &nbsp;**Codex CLI** | `curl -fsSLO https://raw.githubusercontent.com/wbopan/retro-harness/main/codex/retrospection.py && python3 retrospection.py` | Stdlib-only orchestrator over `codex exec` — the same cycle on your `AGENTS.md` + skills. |
+| <img src="https://cdn.simpleicons.org/gnubash" width="18" alt="CLI"> &nbsp;**This repo** | `git clone https://github.com/wbopan/retro-harness && cd retro-harness && uv sync && uv run rho evolve --dataset locomo:data/locomo10.json --rounds 1` | Used to reproduce our results, for research purposes. |
+
+Both one-liners mine the sessions you have **already accumulated** in that project, diagnose recurring
+failures, and evolve the agent's persistent harness (`CLAUDE.md` / auto-memory / scripts, or
+`AGENTS.md` / skills) — applying an update only when the agent's own pairwise self-preference favors
+it. Details: [Retrospection on Claude Code](#retrospection-try-rho-on-your-own-claude-code-projects)
+· [`codex/retrospection.py`](codex/retrospection.py).
+
 ## What is RHO?
 
 Most harness-optimization methods (prompt optimization, skill/tool synthesis, agent search) iterate
@@ -111,6 +125,8 @@ webui/                 # run-browser frontend
 tests/                 # hermetic + real-agent end-to-end tests
 .claude/workflows/
 └── retrospection.js   # RHO as a Claude Code dynamic workflow (see below)
+codex/
+└── retrospection.py   # RHO over `codex exec` for Codex CLI users (stdlib-only)
 ```
 
 Implementations are decoupled behind `typing.Protocol` so components (selectors, strategies, datasets,
@@ -163,6 +179,29 @@ Every cycle persists its artifacts (digests, diagnoses, candidates, probe trajec
 `report.md`, and a `backup/` of the pre-apply harness) under `~/.claude/rho-runs/<timestamp>-<project>/`.
 Re-running the command later is the next evolution round — the harness keeps learning from whatever
 real sessions you accumulate in between.
+
+### Codex CLI variant
+
+[`codex/retrospection.py`](codex/retrospection.py) runs the same cycle for [Codex CLI](https://github.com/openai/codex)
+users — a single stdlib-only Python file orchestrating parallel `codex exec` subprocesses. The mapping
+differs only in what the native harness is:
+
+- **Trajectories** come from Codex's rollout store (`~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl`),
+  filtered to the target project via each rollout's `session_meta.cwd`.
+- **Harness** = `AGENTS.md` (kept lean — Codex caps combined project docs at 32 KB) +
+  `.agents/skills/*/SKILL.md` (Codex's persistent knowledge units, the analog of auto-memory) +
+  helper scripts.
+- **Structured stages** (digest / diagnose / score) use `codex exec --output-schema`; probes run in
+  git worktrees with the candidate harness materialized inside, so Codex loads it natively.
+- All orchestration calls run `--ephemeral` (they never enter the session store, so a later cycle
+  can't mine its own machinery) with the experimental memories feature disabled.
+
+```bash
+python3 codex/retrospection.py --dry-run            # list the sessions it would mine
+python3 codex/retrospection.py                      # one cycle on the current project
+python3 codex/retrospection.py --project ~/my/app \
+    --model gpt-5.5 --n 2 --probes 4 --no-apply     # stage the winner without touching live files
+```
 
 ## Citation
 
