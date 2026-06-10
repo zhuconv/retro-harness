@@ -148,6 +148,27 @@
   }
   .copy-btn:hover { background: var(--bg-alt); }
 
+  /* try-it cards */
+  .try-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 8px; }
+  .try-card { background: var(--bg-alt); border: 1px solid var(--line); padding: 20px 22px; }
+  .try-card.rec { border: 1.5px solid var(--accent); background: var(--accent-soft); }
+  .try-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .try-head img { width: 18px; height: 18px; }
+  .try-head h3 { margin: 0; font-size: 1.02rem; }
+  .try-badge {
+    margin-left: auto; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #fff; background: var(--accent); padding: 3px 10px;
+  }
+  .try-note { color: #41505f; font-size: 0.92rem; margin: 0 0 12px; }
+  .try-code { position: relative; }
+  .try-code pre { margin: 0; padding: 14px 88px 14px 16px; font-size: 0.8rem; white-space: pre-wrap; word-break: break-all; }
+  .try-copy {
+    position: absolute; top: 10px; right: 10px;
+    cursor: pointer; border: 1px solid rgba(231,237,243,.35); background: transparent; color: var(--dark-text);
+    padding: 4px 12px; font-size: 0.78rem; font-weight: 600; font-family: inherit;
+  }
+  .try-copy:hover { background: rgba(231,237,243,.12); }
+
   footer { padding: 40px 0 60px; text-align: center; color: var(--muted); font-size: 0.9rem; }
 
   @media (max-width: 720px) {
@@ -178,6 +199,10 @@
       <a class="btn ghost" href="https://github.com/wbopan/retro-harness">
         <svg viewBox="0 0 24 24"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0C18 4.6 19 4.9 19 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
         Code
+      </a>
+      <a class="btn ghost" href="#try">
+        <svg viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+        Try it
       </a>
       <a class="btn ghost" href="#bibtex">
         <svg viewBox="0 0 24 24"><path d="M7 4h10a1 1 0 0 1 1 1v15l-6-3-6 3V5a1 1 0 0 1 1-1z"/></svg>
@@ -268,6 +293,51 @@
   </div>
 </section>
 
+<section id="try">
+  <div class="wrap">
+    <h2>Try it on your own projects</h2>
+    <p>RHO learns from the sessions your agent has already produced. One line runs a full retrospection
+    cycle — digest past sessions, diagnose recurring failures, evolve the persistent harness, and accept
+    an update only when the agent's own pairwise self-preference favors it (with a backup first).</p>
+    <div class="try-grid">
+      <div class="try-card rec">
+        <div class="try-head">
+          <img src="https://cdn.simpleicons.org/claude" alt="Claude">
+          <h3>Claude Code</h3>
+          <span class="try-badge">Recommended</span>
+        </div>
+        <p class="try-note">Paste as a prompt — a <a href="https://code.claude.com/docs/en/workflows">dynamic workflow</a> runs the cycle on the project you're in, evolving <code>CLAUDE.md</code>, auto-memory, and helper scripts. Plug and play.</p>
+        <div class="try-code">
+          <pre id="try-claude">Run the workflow at https://raw.githubusercontent.com/wbopan/retro-harness/main/.claude/workflows/retrospection.js on this project</pre>
+          <button class="try-copy" onclick="copyTry(this, 'try-claude')">Copy</button>
+        </div>
+      </div>
+      <div class="try-card">
+        <div class="try-head">
+          <img src="https://avatars.githubusercontent.com/u/14957082?s=36" alt="OpenAI">
+          <h3>Codex CLI</h3>
+        </div>
+        <p class="try-note">A stdlib-only Python orchestrator over <code>codex exec</code> — the same cycle on your <code>AGENTS.md</code> and skills.</p>
+        <div class="try-code">
+          <pre id="try-codex">curl -fsSLO https://raw.githubusercontent.com/wbopan/retro-harness/main/codex/retrospection.py && python3 retrospection.py</pre>
+          <button class="try-copy" onclick="copyTry(this, 'try-codex')">Copy</button>
+        </div>
+      </div>
+      <div class="try-card">
+        <div class="try-head">
+          <img src="https://cdn.simpleicons.org/gnubash" alt="CLI">
+          <h3>This repo</h3>
+        </div>
+        <p class="try-note">Used to reproduce our results, for research purposes.</p>
+        <div class="try-code">
+          <pre id="try-repo">git clone https://github.com/wbopan/retro-harness && cd retro-harness && uv sync && uv run rho evolve --dataset locomo:data/locomo10.json --rounds 1</pre>
+          <button class="try-copy" onclick="copyTry(this, 'try-repo')">Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="bibtex">
   <div class="wrap">
     <h2>Citation</h2>
@@ -293,6 +363,12 @@
 </footer>
 
 <script>
+  function copyTry(btn, id) {
+    navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
+      const o = btn.innerText; btn.innerText = 'Copied!';
+      setTimeout(() => btn.innerText = o, 1600);
+    });
+  }
   function copyBib() {
     const t = document.getElementById('bib').innerText;
     navigator.clipboard.writeText(t).then(() => {
