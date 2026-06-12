@@ -5,6 +5,7 @@
 <p align="center">
   <a href="https://arxiv.org/abs/2606.05922"><img src="https://img.shields.io/badge/arXiv-2606.05922-b31b1b.svg?style=for-the-badge" alt="arXiv"></a>
   <a href="https://paper-rho.wenbo.io"><img src="https://img.shields.io/badge/Project-Page-2F4F6F.svg?style=for-the-badge" alt="Project page"></a>
+  <a href="https://www.wenbo.io/blog/rho-dynamic-workflow/"><img src="https://img.shields.io/badge/Blog-Post-4A6B8A.svg?style=for-the-badge" alt="Blog post"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License: MIT"></a>
   <img src="https://img.shields.io/badge/python-3.11%2B-blue.svg?style=for-the-badge" alt="Python 3.11+">
 </p>
@@ -17,6 +18,8 @@
 > **RHO** improves that harness **without any ground-truth labels or validation set** — it learns purely
 > from the agent's own past trajectories. A single retrospective pass lifts SWE-Bench Pro pass rate
 > from **59% → 78%**.
+>
+> Read the story behind RHO and dynamic workflows in the [blog post](https://www.wenbo.io/blog/rho-dynamic-workflow/) ([中文版](https://www.wenbo.io/blog/zh/rho-dynamic-workflow/)).
 
 ---
 
