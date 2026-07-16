@@ -36,7 +36,7 @@ def bare_model(model: str) -> str:
 
 
 def codex_binary() -> str:
-    installed = Path(sys.executable).resolve().parent / "codex"
+    installed = Path(sys.executable).parent / "codex"
     if installed.is_file():
         return str(installed)
     ambient = shutil.which("codex")

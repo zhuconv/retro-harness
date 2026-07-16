@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from rho.method import apply as apply_method
+from rho.method import common as method_common
 from rho.method import search as search_method
 from rho.method.oracle import OracleBackedAgent, OracleClient
 from rho.protocols import Trajectory
@@ -31,6 +32,22 @@ def _trajectory(**overrides) -> Trajectory:
     }
     values.update(overrides)
     return Trajectory(**values)
+
+
+def test_codex_binary_is_found_next_to_symlinked_venv_python(monkeypatch, tmp_path):
+    real_python = tmp_path / "python-real"
+    real_python.write_text("")
+    venv_bin = tmp_path / "venv" / "bin"
+    venv_bin.mkdir(parents=True)
+    python_link = venv_bin / "python"
+    python_link.symlink_to(real_python)
+    codex = venv_bin / "codex"
+    codex.write_text("")
+
+    monkeypatch.setattr(method_common.sys, "executable", str(python_link))
+    monkeypatch.setattr(method_common.shutil, "which", lambda _name: None)
+
+    assert method_common.codex_binary() == str(codex)
 
 
 def test_apply_uses_harness_in_workspace_and_writes_trajectory(monkeypatch, tmp_path):
