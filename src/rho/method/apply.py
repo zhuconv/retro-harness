@@ -55,6 +55,7 @@ def run(args: argparse.Namespace) -> int:
         model=bare_model(args.model),
         reasoning_effort=args.reasoning_effort,
         binary=codex_binary(),
+        fallback_sandbox="danger-full-access",
         isolate_codex_home=True,
         ephemeral=True,
     )

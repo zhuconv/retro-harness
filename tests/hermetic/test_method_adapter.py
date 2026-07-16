@@ -109,6 +109,7 @@ def test_apply_uses_harness_in_workspace_and_writes_trajectory(monkeypatch, tmp_
     assert (workspace / "solution.txt").read_text() == "solved"
     assert not (workspace / ".rho-method").exists()
     assert calls[0]["binary"] == "/fake/codex"
+    assert calls[0]["fallback_sandbox"] == "danger-full-access"
     assert run_calls[0]["env"]["PROBLEM_ID"] == "2"
     assert run_calls[0]["env"]["JUDGE_URL"] == "http://judge:8081"
     assert "METHOD_GIT_TOKEN" not in run_calls[0]["env"]
@@ -212,12 +213,14 @@ def test_search_dispatches_to_original_retro_runners(
         "trials": [{"task_id": "task-a"}],
     }
     calls = []
+    agent_calls = []
 
     class FakeOracle:
         pass
 
     class FakeAgent:
-        def __init__(self, **_kwargs):
+        def __init__(self, **kwargs):
+            agent_calls.append(kwargs)
             self.model = "gpt-5.5"
             self.reasoning_effort = "high"
 
@@ -264,6 +267,7 @@ def test_search_dispatches_to_original_retro_runners(
     )
 
     assert search_method.run(args) == 0
+    assert agent_calls[0]["fallback_sandbox"] == "danger-full-access"
     assert calls[0][0] == expected
     if mode == "rho":
         assert calls[0][1]["n_rounds"] == 2
