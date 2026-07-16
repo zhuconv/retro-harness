@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from types import SimpleNamespace
 
 import pytest
@@ -34,7 +35,22 @@ def _trajectory(**overrides) -> Trajectory:
     return Trajectory(**values)
 
 
-def test_codex_binary_is_found_next_to_symlinked_venv_python(monkeypatch, tmp_path):
+def test_codex_binary_uses_the_bundled_package_api(monkeypatch, tmp_path):
+    bundled = tmp_path / "package" / "bin" / "codex"
+    bundled.parent.mkdir(parents=True)
+    bundled.write_text("")
+    monkeypatch.setitem(
+        sys.modules,
+        "codex_cli_bin",
+        SimpleNamespace(bundled_codex_path=lambda: bundled),
+    )
+
+    assert method_common.codex_binary() == str(bundled)
+
+
+def test_codex_binary_falls_back_next_to_symlinked_venv_python(
+    monkeypatch, tmp_path
+):
     real_python = tmp_path / "python-real"
     real_python.write_text("")
     venv_bin = tmp_path / "venv" / "bin"
@@ -44,6 +60,7 @@ def test_codex_binary_is_found_next_to_symlinked_venv_python(monkeypatch, tmp_pa
     codex = venv_bin / "codex"
     codex.write_text("")
 
+    monkeypatch.setitem(sys.modules, "codex_cli_bin", None)
     monkeypatch.setattr(method_common.sys, "executable", str(python_link))
     monkeypatch.setattr(method_common.shutil, "which", lambda _name: None)
 

@@ -36,6 +36,12 @@ def bare_model(model: str) -> str:
 
 
 def codex_binary() -> str:
+    try:
+        from codex_cli_bin import bundled_codex_path
+    except ImportError:
+        pass
+    else:
+        return str(bundled_codex_path())
     installed = Path(sys.executable).parent / "codex"
     if installed.is_file():
         return str(installed)
