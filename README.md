@@ -109,6 +109,21 @@ Every run persists prompts, completions, trajectories, diagnoses, candidate harn
 configs, scores, and held-out reports under `runs/<timestamp>-<dataset>/`. See the full command
 reference in [`docs/cli-help.md`](docs/cli-help.md).
 
+### Unified Search / Apply adapter
+
+The package also exposes repository-method entrypoints for evaluators that implement the
+`alpha-method-search/v1` process boundary:
+
+- `rho-search --mode rho --max-loops N` calls the original `rho.loop.run_evolution` loop.
+- `rho-search --mode meta-harness --max-loops N` calls the original
+  `rho.meta_harness.runner.run_meta_harness` baseline, with held-out testing left to the evaluator.
+- `rho-apply` runs a frozen seed or searched harness in one task workspace.
+
+During Search, solve calls cross a train-only evaluator oracle while retro continues to own all
+diagnosis, optimization, comparison, candidate selection, and loop control. RHO trajectories do not
+contain oracle rewards; Meta-Harness obtains those rewards only through the existing `Task.grade`
+interface. The final harness is returned as the opaque Search artifact used by later Apply calls.
+
 ## Repository layout
 
 ```
@@ -121,6 +136,7 @@ src/rho/
 ├── datasets/          # SWE-Bench Pro, Terminal-Bench 2, GAIA-2, LOCOMO loaders
 ├── reasoningbank/     # ReasoningBank baseline
 ├── meta_harness/      # Meta-Harness (validation-feedback) baseline
+├── method/            # external Search / Apply process adapters
 └── stores/            # trajectory + harness stores
 configs/               # Codex CLI backend configs
 scripts/               # figure-building & analysis scripts

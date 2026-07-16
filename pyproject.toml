@@ -20,8 +20,13 @@ dependencies = [
 
 [project.scripts]
 rho = "rho.cli:main"
+rho-apply = "rho.method.apply:main"
+rho-search = "rho.method.search:main"
 
 [project.optional-dependencies]
+codex = [
+  "openai-codex-cli-bin==0.144.4",
+]
 dev = [
   "httpx>=0.28",
   "pytest>=8.0",
