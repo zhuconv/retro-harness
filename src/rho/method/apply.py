@@ -65,7 +65,7 @@ def run(args: argparse.Namespace) -> int:
             task_id="harbor-task",
             harness_id=harness.name,
             kind="solve",
-            env=codex_environment(),
+            env=codex_environment(include_task_environment=True),
         )
         write_apply_trajectory(logs, trajectory)
         return 0 if trajectory.exit_code == 0 and not trajectory.timed_out else 1

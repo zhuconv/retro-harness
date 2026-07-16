@@ -8,7 +8,7 @@ import pytest
 
 from rho.method import apply as apply_method
 from rho.method import search as search_method
-from rho.method.oracle import OracleClient
+from rho.method.oracle import OracleBackedAgent, OracleClient
 from rho.protocols import Trajectory
 
 
@@ -41,12 +41,14 @@ def test_apply_uses_harness_in_workspace_and_writes_trajectory(monkeypatch, tmp_
     harness.mkdir()
     (harness / "GUIDE.md").write_text("persistent guidance")
     calls = []
+    run_calls = []
 
     class FakeAgent:
         def __init__(self, **kwargs):
             calls.append(kwargs)
 
         def run(self, root, instructions, **kwargs):
+            run_calls.append(kwargs)
             assert (root / ".rho-method" / "harness" / "GUIDE.md").is_file()
             assert "Persistent method context" in instructions
             (root / "solution.txt").write_text("solved")
@@ -56,6 +58,10 @@ def test_apply_uses_harness_in_workspace_and_writes_trajectory(monkeypatch, tmp_
     monkeypatch.setattr(apply_method, "codex_binary", lambda: "/fake/codex")
     monkeypatch.setenv("OPENAI_BASE_URL", "http://gateway")
     monkeypatch.setenv("OPENAI_API_KEY", "secret")
+    monkeypatch.setenv("PROBLEM_ID", "2")
+    monkeypatch.setenv("JUDGE_URL", "http://judge:8081")
+    monkeypatch.setenv("METHOD_GIT_TOKEN", "method-secret")
+    monkeypatch.setenv("ALPHA_SEARCH_ORACLE_TOKEN", "oracle-secret")
     args = argparse.Namespace(
         instruction="repair it",
         model="openai/gpt-5.5",
@@ -69,6 +75,10 @@ def test_apply_uses_harness_in_workspace_and_writes_trajectory(monkeypatch, tmp_
     assert (workspace / "solution.txt").read_text() == "solved"
     assert not (workspace / ".rho-method").exists()
     assert calls[0]["binary"] == "/fake/codex"
+    assert run_calls[0]["env"]["PROBLEM_ID"] == "2"
+    assert run_calls[0]["env"]["JUDGE_URL"] == "http://judge:8081"
+    assert "METHOD_GIT_TOKEN" not in run_calls[0]["env"]
+    assert "ALPHA_SEARCH_ORACLE_TOKEN" not in run_calls[0]["env"]
     events = [json.loads(line) for line in (logs / "atif" / "trajectory.jsonl").read_text().splitlines()]
     assert events[-1] == {"type": "rho_final_message", "text": "done"}
 
@@ -126,6 +136,30 @@ def test_oracle_reward_is_available_to_grade_but_hidden_from_trajectory(
     grade = client.grade(trajectory)
     assert grade.score == 0.75
     assert grade.details["evaluation_id"] == "eval-000001-abc"
+
+
+def test_oracle_credentials_are_not_forwarded_to_search_model(monkeypatch, tmp_path):
+    monkeypatch.setenv("ALPHA_SEARCH_ORACLE_TOKEN", "oracle-secret")
+    calls = []
+
+    class Inner:
+        model = "gpt-5.5"
+        reasoning_effort = "high"
+
+        def run(self, *args, **kwargs):
+            calls.append(kwargs)
+            return _trajectory(kind="diagnose")
+
+    agent = OracleBackedAgent(Inner(), object())
+    agent.run(
+        tmp_path,
+        "diagnose",
+        kind="diagnose",
+        env={"VISIBLE_TO_MODEL": "yes"},
+    )
+
+    assert calls[0]["env"]["VISIBLE_TO_MODEL"] == "yes"
+    assert "ALPHA_SEARCH_ORACLE_TOKEN" not in calls[0]["env"]
 
 
 @pytest.mark.parametrize(

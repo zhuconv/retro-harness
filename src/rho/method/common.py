@@ -71,7 +71,13 @@ def write_codex_config(directory: Path, model: str, reasoning_effort: str) -> Pa
     return path
 
 
-def codex_environment() -> dict[str, str]:
+def codex_environment(*, include_task_environment: bool = False) -> dict[str, str]:
+    if include_task_environment:
+        return {
+            key: value
+            for key, value in os.environ.items()
+            if not key.startswith(("METHOD_", "ALPHA_SEARCH_ORACLE_"))
+        }
     return {
         key: value
         for key in ("OPENAI_API_KEY", "OPENAI_BASE_URL")
