@@ -23,6 +23,13 @@ task-required file change there. Finish with a concise summary of the completed 
 """
 
 
+def _positive_float(value: str) -> float:
+    number = float(value)
+    if number <= 0:
+        raise argparse.ArgumentTypeError("must be positive")
+    return number
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="rho-apply")
     parser.add_argument("instruction")
@@ -38,6 +45,7 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("read-only", "workspace-write", "danger-full-access"),
         default=None,
     )
+    parser.add_argument("--timeout-seconds", type=_positive_float, default=900.0)
     return parser
 
 
@@ -62,6 +70,7 @@ def run(args: argparse.Namespace) -> int:
         binary=codex_binary(),
         sandbox=args.sandbox,
         fallback_sandbox="danger-full-access",
+        default_timeout_s=args.timeout_seconds,
         isolate_codex_home=True,
         ephemeral=True,
     )
