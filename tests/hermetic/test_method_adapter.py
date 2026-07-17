@@ -103,12 +103,14 @@ def test_apply_uses_harness_in_workspace_and_writes_trajectory(monkeypatch, tmp_
         workspace=str(workspace),
         logs=str(logs),
         harness=str(harness),
+        sandbox="danger-full-access",
     )
 
     assert apply_method.run(args) == 0
     assert (workspace / "solution.txt").read_text() == "solved"
     assert not (workspace / ".rho-method").exists()
     assert calls[0]["binary"] == "/fake/codex"
+    assert calls[0]["sandbox"] == "danger-full-access"
     assert calls[0]["fallback_sandbox"] == "danger-full-access"
     assert run_calls[0]["env"]["PROBLEM_ID"] == "2"
     assert run_calls[0]["env"]["JUDGE_URL"] == "http://judge:8081"
@@ -264,9 +266,11 @@ def test_search_dispatches_to_original_retro_runners(
         search_trials=1,
         solve_workers=1,
         reasoning_effort="high",
+        sandbox="danger-full-access",
     )
 
     assert search_method.run(args) == 0
+    assert agent_calls[0]["sandbox"] == "danger-full-access"
     assert agent_calls[0]["fallback_sandbox"] == "danger-full-access"
     assert calls[0][0] == expected
     if mode == "rho":

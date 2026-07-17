@@ -33,6 +33,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--logs", required=True)
     parser.add_argument("--harness", required=True)
+    parser.add_argument(
+        "--sandbox",
+        choices=("read-only", "workspace-write", "danger-full-access"),
+        default=None,
+    )
     return parser
 
 
@@ -55,6 +60,7 @@ def run(args: argparse.Namespace) -> int:
         model=bare_model(args.model),
         reasoning_effort=args.reasoning_effort,
         binary=codex_binary(),
+        sandbox=args.sandbox,
         fallback_sandbox="danger-full-access",
         isolate_codex_home=True,
         ephemeral=True,
