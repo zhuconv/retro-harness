@@ -86,7 +86,7 @@ def test_apply_uses_harness_in_workspace_and_writes_trajectory(monkeypatch, tmp_
             assert (root / ".rho-method" / "harness" / "GUIDE.md").is_file()
             assert "Persistent method context" in instructions
             (root / "solution.txt").write_text("solved")
-            return _trajectory()
+            return _trajectory(stdout="codex events\n", stderr="codex diagnostics\n")
 
     monkeypatch.setattr(apply_method, "CodexAgent", FakeAgent)
     monkeypatch.setattr(apply_method, "codex_binary", lambda: "/fake/codex")
@@ -120,6 +120,8 @@ def test_apply_uses_harness_in_workspace_and_writes_trajectory(monkeypatch, tmp_
     assert "ALPHA_SEARCH_ORACLE_TOKEN" not in run_calls[0]["env"]
     events = [json.loads(line) for line in (logs / "atif" / "trajectory.jsonl").read_text().splitlines()]
     assert events[-1] == {"type": "rho_final_message", "text": "done"}
+    assert (logs / "stdout.log").read_text() == "codex events\n"
+    assert (logs / "stderr.log").read_text() == "codex diagnostics\n"
 
 
 def test_oracle_reward_is_available_to_grade_but_hidden_from_trajectory(

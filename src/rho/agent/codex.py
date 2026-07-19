@@ -424,7 +424,7 @@ class CodexAgent:
             )
             cmd += ["--output-schema", str(schema_path)]
         cmd += list(self.extra_flags)
-        cmd += [instructions]
+        cmd += ["--", instructions]
 
         try:
             proc = subprocess.run(

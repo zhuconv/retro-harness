@@ -92,6 +92,9 @@ def codex_environment(*, include_task_environment: bool = False) -> dict[str, st
 
 
 def write_apply_trajectory(logs: Path, trajectory: Any) -> None:
+    logs.mkdir(parents=True, exist_ok=True)
+    (logs / "stdout.log").write_text(trajectory.stdout, encoding="utf-8")
+    (logs / "stderr.log").write_text(trajectory.stderr, encoding="utf-8")
     atif = logs / "atif" / "trajectory.jsonl"
     atif.parent.mkdir(parents=True, exist_ok=True)
     with atif.open("w", encoding="utf-8") as handle:

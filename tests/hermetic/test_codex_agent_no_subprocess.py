@@ -108,7 +108,8 @@ print(json.dumps({
         binary=str(binary),
         sandbox="danger-full-access",
     )
-    trajectory = agent.run(workspace, "MODE: solve\n\nsay hi")
+    instructions = "- prompt begins with a dash"
+    trajectory = agent.run(workspace, instructions)
 
     event = trajectory.events[0]
     argv = event["argv"]
@@ -123,6 +124,7 @@ print(json.dumps({
     # Config is a byte-for-byte copy of the file we pointed at.
     assert event["config"] == config_text
     assert "bad-model" not in event["config"]
+    assert argv[-2:] == ["--", instructions]
     assert trajectory.model == DEFAULT_CODEX_MODEL
     assert trajectory.reasoning_effort == DEFAULT_REASONING_EFFORT
 
